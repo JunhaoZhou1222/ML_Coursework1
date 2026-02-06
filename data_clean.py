@@ -64,6 +64,14 @@ clarity_map = {"IF":1, "VVS2":2, "VVS1":3, "VS2":4, "VS1":5, "SI2":6, "SI1":7, "
 df_train["clarity"] = df_train["clarity"].map(clarity_map)
 df_test["clarity"] = df_test["clarity"].map(clarity_map)
 
+train_nans = df_train.isnull().sum().sum()
+test_nans = df_test.isnull().sum().sum()
+
+if train_nans == 0 and test_nans == 0:
+    print("no nans in the cleaned data")
+else:
+    print(f"find nans in cleaned data, Train: {train_nans}, Test: {test_nans}")
+
 
 df_train.reset_index(drop=True, inplace=True)
 df_test.reset_index(drop=True, inplace=True)
