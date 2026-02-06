@@ -1,0 +1,98 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\geometry{left=2.5cm, right=2.5cm,top=1.8cm,bottom=1.8cm}
+
+\title{ML Coursework1 Report}
+\author{Junhao Zhou (k23172173) }
+\date{February 16th 2026}
+
+\begin{document}
+
+\maketitle
+\noindent \textbf{GitHub Repository:} \\
+\href{https://github.com/JunhaoZhou1222/ML_Coursework1}{https://github.com/JunhaoZhou1222/ML\_Coursework1}
+
+\section{Introduction}
+The objective of this course assignment is to establish a reliable model to predict the target variable "Result" based on the diamond feature dataset. This dataset includes physical attributes (carat weight, depth), categorical features (cut, color, clarity), and several features.
+
+\section{Exploratory data analysis}
+\begin{enumerate}
+    \item \textbf{Logical Constraints (Carat):} Instances with $carat \le 0$ or $carat > 5$ were removed as these represent data entry errors or extreme outliers irrelevant to the general distribution.
+    \item \textbf{Physical Constraints (Dimensions):} Rows where $x$, $y$, or $z$ were zero were removed as diamonds cannot have zero volume.
+    \item \textbf{Statistical Outliers (IQR Method):} For features `depth` and `table`, the Interquartile Range (IQR) method was applied. Data points falling outside $Q1 - 1.5 \times IQR$ and $Q3 + 1.5 \times IQR$ were identified as noise.
+\end{enumerate}
+
+Figure \ref{fig:cleaning} demonstrates the effectiveness of this process. The boxplots show the regularization of feature distributions, while the scatter plot reveals the removal of sparse, unrealistic data points, resulting in a dense, cohesive cluster for training.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{viz_comparison_boxplots.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{viz_comparison_scatter.png}
+    \end{minipage}
+    \caption{Data cleaning visualization. Left: Comparison of feature distributions before and after IQR cleaning, showing regularization of Depth and Table. Right: Bivariate analysis showing removal of low-density artifacts (red) to preserve high-density core data (green).}
+    \label{fig:cleaning}
+\end{figure}
+
+\section{Model selection}
+After evaluating multiple candidate algorithms, the \textbf{random forest regressor} was selected as the final model. This choice was based on multiple factors such as the characteristics of the dataset and the requirements of the model.
+
+\subsection{Dataset Characteristics}
+The initial exploratory data analysis revealed several important patterns:
+\begin{itemize}
+    \item \textbf{Mixed feature types}: The dataset contains both continuous numerical variables and categorical variables (e.g., cut, color, clarity), requiring a model capable of handling heterogeneous data.
+    \item \textbf{Unknown feature importance}: With anonymized variables, it was unclear which features were most predictive, necessitating a model with built-in feature selection capabilities.
+\end{itemize}
+
+\subsection{Comparison of Different Models}
+Several regression algorithms were considered:
+
+\vspace{0.3cm}
+
+\noindent\textbf{Linear Regression:} While computationally efficient and interpretable, linear regression assumes a linear relationship between features and the target. Given the observed non-linearities in the data, this model was expected to underfit and serve primarily as a baseline.
+
+\vspace{0.3cm}
+
+\noindent\textbf{Gradient Boosting (e.g., XGBoost):} Gradient boosting methods are powerful and often achieve state-of-the-art performance. However, they are more prone to overfitting on small datasets and require extensive hyperparameter tuning. They also build trees sequentially, which can be slower to train than parallel ensemble methods.
+
+\noindent\textbf{Random Forest:} Random Forest is an ensemble method that combines multiple decision trees trained on bootstrapped samples with random feature subsets. It offers several advantages for this task:
+\begin{itemize}
+    \item \textbf{Handles non-linearity naturally}: Decision trees can capture complex, non-linear patterns without explicit feature engineering.
+    \item \textbf{Handles mixed data types}: Can process both numerical and categorical variables directly (after encoding).
+    \item \textbf{Efficient training}: Trees are built independently in parallel, enabling efficient computation.
+\end{itemize}
+
+\section{Model training and evaluation}
+The model was trained with $n\_estimators=200$ and $oob\_score=True$. To estimate the generalization error without accessing the true test labels, the \textbf{Out-of-Bag (OOB) Score} was used. The OOB score provides an unbiased estimate of the test error by validating the model on samples not used during the bootstrap aggregation of each tree.
+
+\begin{itemize}
+    \item \textbf{$n\_estimators = 200$:} The number of trees in the ensemble. A larger forest reduces variance through averaging, but with diminishing returns beyond 200 trees. This value was chosen to ensure stable predictions without excessive computational cost.
+    
+    \item \textbf{$oob\_score = True$:} Enables Out-of-Bag scoring, which provides an unbiased estimate of test performance without requiring a separate validation set.
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \caption{Model Performance Summary}
+    \begin{tabular}{lc}
+        \toprule
+        \textbf{Metric} & \textbf{Score ($R^2$)} \\
+        \midrule
+        Training $R^2$ & 0.92486 \\
+        \textbf{OOB Score (Estimated Test $R^2$)} & \textbf{0.45034} \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:results}
+\end{table}
+
+As shown in Table \ref{tab:results}, The training score (0.92) indicates the model has learned the training data well, the OOB score (0.45) is the realistic indicator of performance on the hidden test set.
+\end{document}
