@@ -44,13 +44,13 @@ Figure \ref{fig:cleaning} demonstrates the effectiveness of this process. The bo
 \end{figure}
 
 \section{Model selection}
-After evaluating multiple candidate algorithms, the \textbf{random forest regressor} was selected as the final model. This choice was based on multiple factors such as the characteristics of the dataset and the requirements of the model.
+After evaluating multiple candidate algorithms, the \textbf{XGBoost (Extreme Gradient Boosting) regressor} was selected as the final model. This choice was based on its superior predictive performance on the validation set compared to other ensemble methods and baseline models.
 
 \subsection{Dataset Characteristics}
 The initial exploratory data analysis revealed several important patterns:
 \begin{itemize}
-    \item \textbf{Mixed feature types}: The dataset contains both continuous numerical variables and categorical variables (e.g., cut, color, clarity), requiring a model capable of handling heterogeneous data.
-    \item \textbf{Unknown feature importance}: With anonymized variables, it was unclear which features were most predictive, necessitating a model with built-in feature selection capabilities.
+    \item \textbf{Mixed feature types}: The dataset contains both continuous numerical variables and categorical variables (e.g., cut, color, clarity), requiring a model capable of handling heterogeneous data effectively.
+    \item \textbf{Non-linear relationships}: Preliminary analysis suggested complex, non-linear interactions between dimensions ($x, y, z$) and price, which linear models struggle to capture.
 \end{itemize}
 
 \subsection{Comparison of Different Models}
@@ -58,26 +58,28 @@ Several regression algorithms were considered:
 
 \vspace{0.3cm}
 
-\noindent\textbf{Linear Regression:} While computationally efficient and interpretable, linear regression assumes a linear relationship between features and the target. Given the observed non-linearities in the data, this model was expected to underfit and serve primarily as a baseline.
+\noindent\textbf{Linear Regression (Baseline):} While computationally efficient and interpretable, linear regression assumes a linear relationship between features and the target. Given the observed non-linearities in the data, this model served primarily as a baseline and achieved the lowest performance ($R^2 \approx 0.32$).
 
 \vspace{0.3cm}
 
-\noindent\textbf{Gradient Boosting (e.g., XGBoost):} Gradient boosting methods are powerful and often achieve state-of-the-art performance. However, they are more prone to overfitting on small datasets and require extensive hyperparameter tuning. They also build trees sequentially, which can be slower to train than parallel ensemble methods.
+\noindent\textbf{Random Forest:} An ensemble of bagging decision trees. While it handles non-linearity well and is robust to outliers, it produced a lower validation score ($R^2 \approx 0.45$) compared to the boosting approach. It also lacks the fine-grained regularization capabilities found in XGBoost.
 
-\noindent\textbf{Random Forest:} Random Forest is an ensemble method that combines multiple decision trees trained on bootstrapped samples with random feature subsets. It offers several advantages for this task:
+\vspace{0.3cm}
+
+\noindent\textbf{XGBoost (Selected):} XGBoost is a gradient boosting framework that builds trees sequentially, with each new tree correcting errors made by previous ones. It was selected for the following reasons:
 \begin{itemize}
-    \item \textbf{Handles non-linearity naturally}: Decision trees can capture complex, non-linear patterns without explicit feature engineering.
-    \item \textbf{Handles mixed data types}: Can process both numerical and categorical variables directly (after encoding).
-    \item \textbf{Efficient training}: Trees are built independently in parallel, enabling efficient computation.
+    \item \textbf{Superior Performance}: It achieved the highest $R^2$ score ($0.47$) among all tested models.
+    \item \textbf{Regularization}: Unlike standard gradient boosting, XGBoost includes L1 and L2 regularization, which helps prevent overfitting on the training data.
+    \item \textbf{Gradient Boosting Framework}: By optimizing a differentiable loss function, it captures subtle patterns in the diamond pricing structure that bagging methods (like Random Forest) missed.
 \end{itemize}
 
 \section{Model training and evaluation}
-The model was trained with $n\_estimators=200$ and $oob\_score=True$. To estimate the generalization error without accessing the true test labels, the \textbf{Out-of-Bag (OOB) Score} was used. The OOB score provides an unbiased estimate of the test error by validating the model on samples not used during the bootstrap aggregation of each tree.
+The final XGBoost model was trained using the following hyperparameters: $n\_estimators=200$, $learning\_rate=0.1$, and $random\_state=123$. To evaluate the model's generalization capability, the dataset was split into training and validation sets (80\% training, 20\% validation).
 
 \begin{itemize}
-    \item \textbf{$n\_estimators = 200$:} The number of trees in the ensemble. A larger forest reduces variance through averaging, but with diminishing returns beyond 200 trees. This value was chosen to ensure stable predictions without excessive computational cost.
+    \item \textbf{$n\_estimators = 200$:} The number of boosting rounds (trees). A value of 200 was chosen to allow the model sufficient iterations to correct residual errors without leading to significant overfitting.
     
-    \item \textbf{$oob\_score = True$:} Enables Out-of-Bag scoring, which provides an unbiased estimate of test performance without requiring a separate validation set.
+    \item \textbf{$learning\_rate = 0.1$:} This controls the step size shrinkage used to prevent overfitting. A moderate rate of 0.1 ensures the model converges stably to the optimal solution.
 \end{itemize}
 
 \begin{table}[H]
@@ -88,13 +90,13 @@ The model was trained with $n\_estimators=200$ and $oob\_score=True$. To estimat
         \textbf{Metric} & \textbf{Score ($R^2$)} \\
         \midrule
         Training $R^2$ & 0.92486 \\
-        \textbf{OOB Score (Estimated Test $R^2$)} & \textbf{0.45034} \\
-        \textbf{Linear Regression Score (Estimated Test $R^2$)} & \textbf{0.32128} \\
-        \textbf{XGboost Score (Estimated Test $R^2$)} & \textbf{0.47015} \\
+        \textbf{Random Forest Score (Estimated $R^2$)} & \textbf{0.46154} \\
+        \textbf{Linear Regression Score (Estimated $R^2$)} & \textbf{0.32128} \\
+        \textbf{XGBoost Score (Estimated $R^2$)} & \textbf{0.47015} \\
         \bottomrule
     \end{tabular}
     \label{tab:results}
 \end{table}
 
-As shown in Table \ref{tab:results}, The training score (0.92) indicates the model has learned the training data well, the XGboost score (0.47) is the best performance model on the hidden test set.
+As shown in Table \ref{tab:results}, the training score (0.92) indicates the model has learned the training data well, the XGboost score (0.47) is the best performance model on the validation set.
 \end{document}
