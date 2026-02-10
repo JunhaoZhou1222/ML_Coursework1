@@ -89,10 +89,12 @@ The model was trained with $n\_estimators=200$ and $oob\_score=True$. To estimat
         \midrule
         Training $R^2$ & 0.92486 \\
         \textbf{OOB Score (Estimated Test $R^2$)} & \textbf{0.45034} \\
+        \textbf{Linear Regression Score (Estimated Test $R^2$)} & \textbf{0.32128} \\
+        \textbf{XGboost Score (Estimated Test $R^2$)} & \textbf{0.47015} \\
         \bottomrule
     \end{tabular}
     \label{tab:results}
 \end{table}
 
-As shown in Table \ref{tab:results}, The training score (0.92) indicates the model has learned the training data well, the OOB score (0.45) is the realistic indicator of performance on the hidden test set.
+As shown in Table \ref{tab:results}, The training score (0.92) indicates the model has learned the training data well, the XGboost score (0.47) is the best performance model on the hidden test set.
 \end{document}

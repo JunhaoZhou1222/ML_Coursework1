@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
 
 # Set seed
 np.random.seed(123)
@@ -84,21 +85,16 @@ print("start training model...")
 X_trn = trn.drop(columns=['outcome'])
 y_trn = trn['outcome']
 
-# make sure test set has the same columns as training set (after encoding)
 X_tst = X_tst[X_trn.columns]
 
-# tree number: n_estimators=200
-model = RandomForestRegressor(n_estimators=200, random_state=123, oob_score=True)
-model.fit(X_trn, y_trn)
+X_train_sub, X_val, y_train_sub, y_val = train_test_split(X_trn, y_trn, test_size=0.2, random_state=123)
 
-print(f"OOB Score: {model.oob_score_:.5f}")
+model = LinearRegression()
+model.fit(X_train_sub, y_train_sub)
+pred = model.predict(X_val)
+r2 = r2_score(y_val, pred)
+print(f" Linear Regression R^2: {r2:.5f}")
 
-# Test set predictions
-yhat_rf = model.predict(X_tst)
 
-# Format submission:
-# This is a single-column CSV with nothing but your predictions
-out = pd.DataFrame({'yhat': yhat_rf})
-out.to_csv('CW1_submission_23172173.csv', index=False)
 
 
