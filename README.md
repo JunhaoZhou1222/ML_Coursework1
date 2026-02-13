@@ -39,6 +39,8 @@ The model performance was evaluated using the Coefficient of Determination ($R^2
 | **Linear Regression Score** | **0.32128** | **baseline model** |
 | **XGboost Score** | **0.47015** | **Best performing model** |
 | **Random Forest Score** | **0.45034** | **comparison model** |
+| **Decision Tree Score** | **0.26777** | **Single Tree model** |
+| **KNN Score** | **0.17860** | **Distance measure model** |
 | Training $R^2$ | 0.92486 | Indicates strong fit to training data |
 
 ## Visualizations
