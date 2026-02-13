@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import StandardScaler
 
 # Set seed
 np.random.seed(123)
@@ -88,11 +89,15 @@ X_tst = X_tst[X_trn.columns]
 
 X_train_sub, X_val, y_train_sub, y_val = train_test_split(X_trn, y_trn, test_size=0.2, random_state=123)
 
-model = LinearRegression()
-model.fit(X_train_sub, y_train_sub)
-pred = model.predict(X_val)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train_sub)
+X_val_scaled = scaler.transform(X_val)
+
+model = KNeighborsRegressor(n_neighbors=10)
+model.fit(X_train_scaled, y_train_sub)
+pred = model.predict(X_val_scaled)
 r2 = r2_score(y_val, pred)
-print(f" Linear Regression R^2: {r2:.5f}")
+print(f" KNN R^2: {r2:.5f}")
 
 
 

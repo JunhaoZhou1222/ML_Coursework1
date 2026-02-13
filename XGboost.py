@@ -82,7 +82,6 @@ else:
 
 print("data cleaning completed.")
 print("start training model...")
-# Train your model (using Random Forest here)
 X_trn = trn.drop(columns=['outcome'])
 y_trn = trn['outcome']
 

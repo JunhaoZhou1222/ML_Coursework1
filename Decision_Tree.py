@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 
@@ -88,11 +88,11 @@ X_tst = X_tst[X_trn.columns]
 
 X_train_sub, X_val, y_train_sub, y_val = train_test_split(X_trn, y_trn, test_size=0.2, random_state=123)
 
-model = LinearRegression()
+model = DecisionTreeRegressor(random_state=123, max_depth=10)
 model.fit(X_train_sub, y_train_sub)
 pred = model.predict(X_val)
 r2 = r2_score(y_val, pred)
-print(f" Linear Regression R^2: {r2:.5f}")
+print(f" Decision tree R^2: {r2:.5f}")
 
 
 
