@@ -41,6 +41,7 @@ The model performance was evaluated using the Coefficient of Determination ($R^2
 | **Random Forest Score** | **0.45034** | **comparison model** |
 | **Decision Tree Score** | **0.26777** | **Single Tree model** |
 | **KNN Score** | **0.17860** | **Distance measure model** |
+| **SVR Score** | **0.22279** | **Vector Regression model** |
 | Training $R^2$ | 0.92486 | Indicates strong fit to training data |
 
 ## Visualizations
