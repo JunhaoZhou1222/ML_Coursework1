@@ -81,14 +81,13 @@ else:
 
 print("data cleaning completed.")
 print("start training model...")
-# Train your model (using Random Forest here)
 X_trn = trn.drop(columns=['outcome'])
 y_trn = trn['outcome']
 
 # make sure test set has the same columns as training set (after encoding)
 X_tst = X_tst[X_trn.columns]
 
-# tree number: n_estimators=200, max_depth=5, learning_rate=0.1
+# tree number: n_estimators=100, max_depth=5, learning_rate=0.1
 model = xgb.XGBRegressor(n_estimators=100, max_depth=5, learning_rate=0.1, random_state=123)
 model.fit(X_trn, y_trn)
 
